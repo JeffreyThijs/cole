@@ -9,7 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"crypto/tls"
 
 	"github.com/caarlos0/env"
 	"github.com/jpweber/cole/configuration"
@@ -95,40 +94,40 @@ func main() {
 	// Server Lifecycle
 	//To setup a insecure server for http without any tls validation
 	/*
+		s := &http.Server{
+			Addr:         ":8080",
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+		}
+		go func() {
+			log.Fatal(s.ListenAndServe())
+		}()
+	*/
+
+	//To setup a https secure server with certificate validation.
+	//To setup a https secure server with TLS 1.2
+	// cfg := &tls.Config{
+	// 	MinVersion:               tls.VersionTLS12,
+	// 	PreferServerCipherSuites: true,
+	// 	CipherSuites: []uint16{
+	// 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+	// 		tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+	// 		tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
+	// 		tls.TLS_RSA_WITH_AES_256_CBC_SHA,
+	// 	},
+	// }
+
 	s := &http.Server{
 		Addr:         ":8080",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	go func() {
-		log.Fatal(s.ListenAndServe())
-	}()
-	*/
-
-	//To setup a https secure server with certificate validation.
-        //To setup a https secure server with TLS 1.2
-         cfg := &tls.Config{
-		MinVersion:               tls.VersionTLS12,
-		PreferServerCipherSuites: true,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-			tls.TLS_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_RSA_WITH_AES_256_CBC_SHA,
-		},
-	}
-
-
-	s := &http.Server{
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
-	#err := http.ListenAndServeTLS(":443", "/usr/local/share/ca-certificates/https-server.crt", "/usr/local/share/ca-certificates/https-server.key", nil);
-	err  := s.ListenAndServeTLS("/usr/local/share/ca-certificates/https-server.crt", "/usr/local/share/ca-certificates/https-server.key");
+	//err := http.ListenAndServeTLS(":443", "/usr/local/share/ca-certificates/https-server.crt", "/usr/local/share/ca-certificates/https-server.key", nil);
+	err := s.ListenAndServe()
 
 	if err != nil {
-	    log.Fatal(err)
-	 }
+		log.Fatal(err)
+	}
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)

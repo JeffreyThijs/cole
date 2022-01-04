@@ -55,7 +55,7 @@ func ping(w http.ResponseWriter, r *http.Request) {
 	// DEBUG
 	log.Println("timerID:", timerID)
 	if err != nil {
-		log.Println("Cannot register checkin", err)
+		log.Println("Cannot register checking", err)
 	}
 
 	// log metric of alert recieved
